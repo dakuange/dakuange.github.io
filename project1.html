@@ -40,12 +40,160 @@
 <h3>
 <a id="about-cg" class="anchor" href="#about-cg" aria-hidden="true"><span class="octicon octicon-link"></span></a>COMMENT</h3>
 
-<p>待续</p>
+<p>采用Bresenham与DDA 算法进行画线，采用教材PPT所提供思路进行画圆</p>
 
 <h3>
 <a id="project" class="anchor" href="#project" aria-hidden="true"><span class="octicon octicon-link"></span></a>CODE</h3>
 
-<p>代码</p>
+<p>代码void draw_xy(int x0, int y0);
+
+void draw_DDA(int x0, int y0, int x1, int y1);
+void draw_line(int x1, int y1, int x2, int y2);
+
+void draw_circle(int radius, int x0, int y0);
+inline void swap_int(int *a, int *b) {
+	*a ^= *b;
+	*b ^= *a;
+	*a ^= *b;
+}
+int Round(float a) {
+	return (a - int(a)) > 0.5 ? int(a) + 1 : int(a);
+}
+int main()
+{
+	initgraph(800, 800);
+	draw_circle(100,0,0);
+	draw_circle(200, 50, 50);
+	draw_xy(400, 400);
+    //draw_line_DDA(0,0,150,100);
+	draw_line(0, 0, 500, 300);
+	draw_line(0, 0, 100, 200);
+	//draw_DDA(0, 0, 100, 300);
+	draw_line(0,0,-100,-300);
+
+	getch();
+	closegraph();
+	return 0;
+}
+void draw_xy(int x0, int y0) {
+	for(int k = 0;k < 2*x0;k++){
+		putpixel(k, y0, WHITE);
+	}
+	for (int i = 0;i < 2*y0;i++) {
+		putpixel(x0, i, YELLOW);
+	}
+}
+void draw_DDA(int x0, int y0, int x1, int y1) {
+	x0 += 400;
+	y0 += 400;
+	x1 += 400;
+	y1 += 400;
+	if (x0 > x1) {
+		int temp;
+		temp = x0;
+		x0 = x1;
+		x1 = temp;
+	}
+	float y = y0;
+	float x = x0;
+	float m = (y1 - y0) / (float)(x1 - x0);
+	if (m <= 1 || m >= -1) {
+		int x;
+		for (x = x0; x <= x1; x++) {
+			putpixel(x, 800-Round(y), GREEN);
+			y += m;
+		}
+	}
+	else {
+		int y;
+		for (y = y0; y <= y1; y++) {
+			putpixel(Round(x), 800-y, GREEN);
+			x += 1 / m;
+		}
+	}
+}
+
+void draw_line( int x1, int y1, int x2, int y2) {
+	x1 += 400;
+	y1 += 400;
+	x2 += 400;
+	y2 += 400;
+	
+	int dx = abs(x2 - x1),
+		dy = abs(y2 - y1),
+		yy = 0;
+
+	if (dx < dy) {//与x轴夹角大于45°
+		yy = 1;
+		swap_int(&x1, &y1);
+		swap_int(&x2, &y2);
+		swap_int(&dx, &dy);
+	}
+
+	int ix = (x2 - x1) > 0 ? 1 : -1,
+		iy = (y2 - y1) > 0 ? 1 : -1,
+		cx = x1,
+		cy = y1,
+		n2dy = dy * 2,
+		n2dydx = (dy - dx) * 2,
+		d = dy * 2 - dx;
+
+	if (yy) { // 斜率大于一
+		while (cx != x2) {
+			if (d < 0) {
+				d += n2dy;
+			}
+			else {
+				cy += iy;
+				d += n2dydx;
+			}
+			putpixel( cy, 800-cx, RED);
+			cx += ix;
+		}
+	}
+	else { // 如果直线与 x 轴的夹角小于 45 度
+		while (cx != x2) {
+			if (d < 0) {
+				d += n2dy;
+			}
+			else {
+				cy += iy;
+				d += n2dydx;
+			}
+			putpixel( cx, 800-cy, BLUE);
+			cx += ix;
+		}
+	}
+}
+
+
+
+
+
+
+
+void draw_circle(int radius, int x0, int y0) {
+	int x = 0, y = radius;
+	int d = 1 - radius;
+	while (y>x) {
+		if (d<0) 
+			d += 2 * x + 3;
+		else { 
+			d += 2 * (x - y) + 5;
+			y--;
+		}
+		x++;
+		//没找到ppt上的方法
+		putpixel(y + y0+400, x + x0+400, WHITE);
+		putpixel(y0 - y+400, x + x0+400, RED);
+		putpixel(y0 - y+400, x0 - x+400, GREEN);
+		putpixel(y0 + y+400, x0 - x+400,BLUE);
+		putpixel(x + x0+400, y + y0+400, BLUE);
+		putpixel(x0 - x+400, y + y0+400, YELLOW);
+		putpixel(x + x0+400, y0 - y+400, GREEN);
+		putpixel(x0 - x+400, y0 - y+400, WHITE);
+	}
+}</p>
 
 <h3>
 <a id="contact" class="anchor" href="#contact" aria-hidden="true"><span class="octicon octicon-link"></span></a>CONTACT</h3>
